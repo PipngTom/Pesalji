@@ -1,0 +1,58 @@
+
+  <!-- <table>
+    <th>Blocks</th>
+    <tr>
+      <td>EUROPEAN UNION<input type="button" value="EU"
+        (click)="onGetBlock($event)"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>EFTA<input type="button" value="EFTA"
+        (click)="onGetBlock($event)"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td>African UNION<input type="button" value="AU"
+        (click)="onGetBlock($event)"
+        />
+      </td>
+    </tr>
+  </table> -->
+  <mat-toolbar color="primary">
+      <a routerLink="/block">Regional Blocks</a>
+      <a routerLink="/countries">All Countries</a>
+  </mat-toolbar>
+     <router-outlet></router-outlet>
+  <!-- <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+        <mat-cell *matCellDef="let country"> {{country.name}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="capital">
+        <mat-header-cell *matHeaderCellDef> Capital </mat-header-cell>
+        <mat-cell *matCellDef="let country"> {{country.capital}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="code">
+        <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
+        <mat-cell *matCellDef="let country"> {{country.alpha3Code}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="details">
+        <mat-header-cell *matHeaderCellDef> Details </mat-header-cell>
+        <mat-cell *matCellDef="let country"><button mat-raised-button color="primary" (click)="onGetCountry(country.alpha3Code)">Get details</button></mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </table>
+  </div> -->
+  
+
+  <!-- <ul>
+    <li *ngFor="let country of countries">
+      <p>{{ country.name }}</p>
+    </li>
+  </ul> -->
+  
+  
