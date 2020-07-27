@@ -1,23 +1,22 @@
-<div class="mat-elevation-z8">
-  <table *ngIf="loaded" mat-table [dataSource]="dataSource">
-    <ng-container matColumnDef="name">
-      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-      <mat-cell *matCellDef="let country"> {{country.name}} </mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="capital">
-      <mat-header-cell *matHeaderCellDef> Capital </mat-header-cell>
-      <mat-cell *matCellDef="let country"> {{country.capital}} </mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="code">
-      <mat-header-cell *matHeaderCellDef> Code </mat-header-cell>
-      <mat-cell *matCellDef="let country"> {{country.alpha3Code}} </mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="details">
-      <mat-header-cell *matHeaderCellDef> Details </mat-header-cell>
-      <mat-cell *matCellDef="let country"><button mat-raised-button color="primary" (click)="onGetCountry(country.alpha3Code)">Get details</button></mat-cell>
-    </ng-container>
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  </table>
-  <mat-paginator *ngIf="loaded" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+<div class="container">
+  <cdk-virtual-scroll-viewport itemSize="200" class="viewport">
+    <div fxLayout="row wrap" fxLayoutGap="16px" class="align">
+      <mat-card fxFlex.lg="calc(20% - 16px)" fxFlex.lt-lg="calc(20% - 16px)"
+      fxFlex.xs="calc(100% - 16px)" *cdkVirtualFor="let country of countries" (click)="onGetCountry(country.alpha3Code)">
+        <mat-card-header>
+          <mat-card-title> {{ country?.name }}</mat-card-title>
+          <mat-card-subtitle>{{ country?.alpha3Code}}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image src="{{ country?.flag }}" alt="img">
+        <mat-card-content>
+          <p>Capital: <b>{{ country?.capital }}</b></p>
+          <br>
+          <p>Region: <b>{{ country?.subregion }}</b></p>
+          <br>
+          <p>Population: <b>{{ country?.population | number }}</b></p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+   
+  </cdk-virtual-scroll-viewport>
 </div>

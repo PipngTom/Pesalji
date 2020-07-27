@@ -15,6 +15,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { BlockCountriesComponent } from './block-countries/block-countries.component';
 import { SingleCountryComponent } from './single-country/single-country.component';
 import { MatCardModule } from '@angular/material/card';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 const appRoutes: Routes = [
     { path: 'block', component: BlockComponent },
@@ -40,7 +42,9 @@ const appRoutes: Routes = [
     MatButtonModule,
     MatToolbarModule,
     MatPaginatorModule,
+    ScrollingModule,
     MatCardModule,
+    FlexLayoutModule,
     RouterModule.forRoot(appRoutes)
   ],
   providers: [AppService],

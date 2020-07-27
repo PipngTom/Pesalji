@@ -80,7 +80,5 @@ export class BlockComponent implements OnInit {
   onGetBlock(abb: string){
     this.router.navigate(['/block-countries'], {queryParams: {abbrev: abb}});
     console.log(abb);
-
-    
   }
 }
