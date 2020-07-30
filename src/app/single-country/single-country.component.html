@@ -24,7 +24,7 @@
     </ng-container>
     <ng-container matColumnDef="acr">
       <mat-header-cell *matHeaderCellDef> Acr </mat-header-cell>
-      <mat-cell *matCellDef="let country"> {{country.acr}} </mat-cell>
+      <mat-cell *matCellDef="let country"> {{country.alpha3Code}} </mat-cell>
     </ng-container>
     <ng-container matColumnDef="population">
       <mat-header-cell *matHeaderCellDef> Population </mat-header-cell>
@@ -32,7 +32,7 @@
     </ng-container>
     <ng-container matColumnDef="details">
       <mat-header-cell *matHeaderCellDef> Details </mat-header-cell>
-      <mat-cell *matCellDef="let country"><button mat-raised-button color="primary" (click)="onGetCountry(country.acr)">Get details</button></mat-cell>
+      <mat-cell *matCellDef="let country"><button mat-raised-button color="primary" (click)="onGetCountry(country.alpha3Code)">Get details</button></mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>

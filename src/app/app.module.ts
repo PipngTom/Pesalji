@@ -8,7 +8,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { BlockComponent } from './block/block.component';
-import { Routes, RouterModule } from '@angular/router';
 import { CountriesComponent } from './countries/countries.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -17,13 +16,11 @@ import { SingleCountryComponent } from './single-country/single-country.componen
 import { MatCardModule } from '@angular/material/card';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { StoreModule } from '@ngrx/store';
+import { appReducer } from './store/app.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import {  AppEffects } from './store/app.effects';
 
-const appRoutes: Routes = [
-    { path: 'block', component: BlockComponent },
-    { path: 'countries', component: CountriesComponent },
-    { path: 'block-countries', component: BlockCountriesComponent },
-    { path: 'single-country', component: SingleCountryComponent }
-]
 
 @NgModule({
   declarations: [
@@ -36,6 +33,8 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     AppRoutingModule,
+    StoreModule.forRoot({reducer: appReducer}),
+    EffectsModule.forRoot([AppEffects]),
     BrowserAnimationsModule,
     HttpClientModule,
     MatTableModule,
@@ -45,7 +44,6 @@ const appRoutes: Routes = [
     ScrollingModule,
     MatCardModule,
     FlexLayoutModule,
-    RouterModule.forRoot(appRoutes)
   ],
   providers: [AppService],
   bootstrap: [AppComponent]

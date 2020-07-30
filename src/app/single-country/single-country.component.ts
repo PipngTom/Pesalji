@@ -4,6 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { Country } from '../country';
+import { Store } from '@ngrx/store';
+import * as AppActions from '../store/app.actions';
+
 
 
 @Component({
@@ -18,51 +21,58 @@ export class SingleCountryComponent implements OnInit, OnDestroy {
   displayedColumns = ['name', 'population', 'acr' ,'details'];
   bordersCountries = [];
   private subscription: Subscription;
-  private subscriptions: Subscription [] = [];
+  private subscript: Subscription;
 
-  constructor(private appService: AppService, private route: ActivatedRoute, private router: Router) {
+  constructor(private appService: AppService, private route: ActivatedRoute, private router: Router,
+    private store: Store<any>) {
     this.skr = this.route.snapshot.queryParamMap.get('akron');
-   }
+    }
 
   ngOnInit(): void {
-    this.subscription = this.appService.onGetCode(this.skr)
+    this.store.dispatch(new AppActions.FlushBordersCoutries());
+    this.store.dispatch(new AppActions.SingleCountry(this.skr));
+    this.subscription = this.store
+    .select(single => single.reducer.singleCountry)
     .subscribe(
-      (item: Country) => {
-        this.country = item;
+  (item: Country) => {
+    this.country = item;
+    if(item){
+      if(item.alpha3Code == this.skr){
         this.fillBordersCountries();
+      }    
+
+    }
+  }
+)
+    
+  }
+
+  onGetCountry(abb: string) {
+    this.store.dispatch(new AppActions.SingleCountry(abb));
+     this.router.navigate(['/single-country'] ,{queryParams: {akron: abb}})
+     .then(
+      () => {
+        window.location.reload();
+      }
+    );
+  }
+
+  fillBordersCountries() {
+    this.country.borders.map((item: string) => {
+      this.store.dispatch(new AppActions.GetBordersCountries(item))
+    })
+    this.subscript = this.store
+    .select(border => border.reducer.bordersCountries)
+    .subscribe(
+      (items) => {
+        this.dataSource = items;
       }
     )
   }
 
-  onGetCountry(abb: string) {
-     this.router.navigate(['/single-country'], {queryParams: {akron: abb}})
-     .then(
-      (items) => {
-        window.location.reload();
-      }
-    );
-    console.log(abb)
-  }
-
-  fillBordersCountries() {
-      this.country.borders.map((item: string, index: number) => {
-       this.subscriptions.push(this.appService.onGetCode(item)
-        .subscribe(
-          (country: Country) => {
-            this.bordersCountries.push({name: country.name, acr: country.alpha3Code, population: country.population});
-            if (index == this.country.borders.length-1) {
-              this.dataSource = <any>this.bordersCountries;
-            }
-          }
-        ))
-      }
-      )
-  }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.subscriptions.map((item) => {
-      item.unsubscribe();
-    })
+    this.subscript.unsubscribe();
   }
 }

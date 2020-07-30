@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AppService } from '../app.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import * as AppActions from '../store/app.actions';
 
 
 @Component({
@@ -71,14 +73,16 @@ export class BlockComponent implements OnInit {
 
   
 
-  constructor(private appService: AppService, private router: Router) { }
+  constructor(private appService: AppService, private router: Router,
+    private store: Store<any>) { }
 
   ngOnInit(): void {
     this.dataSource = <any>this.blocks;
   }
 
   onGetBlock(abb: string){
-    this.router.navigate(['/block-countries'], {queryParams: {abbrev: abb}});
-    console.log(abb);
+    this.store.dispatch(new AppActions.GetBlockCountries(abb));
+    this.router.navigate(['/block-countries']);
+
   }
 }

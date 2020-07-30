@@ -1,10 +1,11 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppService } from '../app.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
 import { Country } from '../country';
+import { Store } from '@ngrx/store';
+import * as AppAction from '../store/app.actions';
+
 
 @Component({
   selector: 'app-block-countries',
@@ -12,36 +13,26 @@ import { Country } from '../country';
   styleUrls: ['./block-countries.component.css']
 })
 export class BlockCountriesComponent implements OnInit,OnDestroy {
-  abb: string;
   blockCountries: Country[] = [];
-  dataSource = new MatTableDataSource<any>();
-  displayedColumns = ['name', 'capital', 'code', 'details'];
   private subscription: Subscription;
 
-  @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
-    this.dataSource.paginator = value;
-  }
 
   constructor(private appService: AppService, private route: ActivatedRoute,
-    private router: Router) { 
-    this.abb = this.route.snapshot.queryParamMap.get('abbrev');
+    private router: Router,
+    private store: Store<any>) { 
   }
 
   ngOnInit(): void {
-    this.subscription = this.appService.onGetBlockCountries(this.abb)
-    .subscribe(
-      (items: Country[]) => {
-        this.blockCountries = items;
-        this.dataSource = <any>this.blockCountries;
-      }
-    )
+    this.subscription = this.store
+    .select(block => block.reducer.blockCountries)
+    .subscribe((item) => {
+      this.blockCountries = item;
+    })
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-  }
 
   onGetCountry(abb: string) {
+    this.store.dispatch(new AppAction.SingleCountry(abb));
     this.router.navigate(['/single-country'], {queryParams: {akron: abb}})
   }
 

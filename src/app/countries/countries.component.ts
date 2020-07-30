@@ -1,50 +1,38 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppService } from '../app.service';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Country } from '../country';
+import { Store } from '@ngrx/store';
+import * as AppActions from '../store/app.actions';
 
 @Component({
   selector: 'app-countries',
   templateUrl: './countries.component.html',
   styleUrls: ['./countries.component.css']
 })
-export class CountriesComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CountriesComponent implements OnInit, OnDestroy {
   countries: Country[]= [];
-  loaded = false;
-  dataSource = new MatTableDataSource<any>();
-  displayedColumns = ['name', 'capital', 'code', 'details'];
   private subscription: Subscription;
-
-  @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
-    this.dataSource.paginator = value;
-  }
    
-  constructor(private appService: AppService, private router: Router) { 
+  constructor(private appService: AppService, private router: Router,
+    private store: Store<any>) { 
     
   }
 
   ngOnInit() {
-    this.subscription = this.appService.onGetAllCountries()
-    .subscribe(
-      (items: Country[]) => {
-        this.countries = items;
-        this.dataSource = <any>this.countries;
-        this.loaded = true;
-      }
-    )
+  this.store.dispatch(new AppActions.GetAllCountries());
+  this.subscription = this.store
+    .select(store => store.reducer.countries)
+      .subscribe((items: Country[]) => {
+          this.countries = items;
+          
+        }
+      );
   }
 
-  ngAfterViewInit() {
-    if(this.loaded){
-      this.dataSource.paginator = this.paginator;
-    }
-    
-  }
-  
   onGetCountry(skr: string) {
+    this.store.dispatch(new AppActions.SingleCountry(skr));
     this.router.navigate(['/single-country'], {queryParams: {akron: skr}});
   }
 
