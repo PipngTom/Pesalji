@@ -14,6 +14,7 @@ import * as AppAction from '../store/app.actions';
 })
 export class BlockCountriesComponent implements OnInit,OnDestroy {
   blockCountries: Country[] = [];
+  filteredBlockCountries: Country[] = [];
   private subscription: Subscription;
 
 
@@ -27,6 +28,7 @@ export class BlockCountriesComponent implements OnInit,OnDestroy {
     .select(block => block.reducer.blockCountries)
     .subscribe((item) => {
       this.blockCountries = item;
+      this.filteredBlockCountries = this.blockCountries;
     })
   }
 
@@ -34,6 +36,12 @@ export class BlockCountriesComponent implements OnInit,OnDestroy {
   onGetCountry(abb: string) {
     this.store.dispatch(new AppAction.SingleCountry(abb));
     this.router.navigate(['/single-country'], {queryParams: {akron: abb}})
+  }
+
+  onFilter(event) {
+    this.filteredBlockCountries = this.blockCountries.filter(item => {
+      return item.name.toUpperCase().includes(event.target.value.toUpperCase());
+    })
   }
 
   ngOnDestroy() {

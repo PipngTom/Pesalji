@@ -20,6 +20,8 @@ import { StoreModule } from '@ngrx/store';
 import { appReducer } from './store/app.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import {  AppEffects } from './store/app.effects';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 
 @NgModule({
@@ -41,6 +43,8 @@ import {  AppEffects } from './store/app.effects';
     MatButtonModule,
     MatToolbarModule,
     MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
     ScrollingModule,
     MatCardModule,
     FlexLayoutModule,

@@ -13,6 +13,7 @@ import * as AppActions from '../store/app.actions';
 })
 export class CountriesComponent implements OnInit, OnDestroy {
   countries: Country[]= [];
+  filteredCountries: Country[] = [];
   private subscription: Subscription;
    
   constructor(private appService: AppService, private router: Router,
@@ -26,9 +27,16 @@ export class CountriesComponent implements OnInit, OnDestroy {
     .select(store => store.reducer.countries)
       .subscribe((items: Country[]) => {
           this.countries = items;
+          this.filteredCountries = this.countries;
           
         }
       );
+  }
+
+  onFilter(event) {
+    this.filteredCountries = this.countries.filter(item => {
+      return item.name.toUpperCase().includes(event.target.value.toUpperCase());
+    })
   }
 
   onGetCountry(skr: string) {
@@ -39,5 +47,7 @@ export class CountriesComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
+
+
 
 }
