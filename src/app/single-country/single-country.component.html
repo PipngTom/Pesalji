@@ -1,23 +1,23 @@
 <div class="main-div">
   <mat-card class="example-card">
     <mat-card-header>
-      <mat-card-title> {{ country?.name }}</mat-card-title>
-      <mat-card-subtitle>{{ country?.alpha3Code}}</mat-card-subtitle>
+      <mat-card-title> {{ (country$ | async)?.name }}</mat-card-title>
+      <mat-card-subtitle>{{ (country$ | async)?.name }}</mat-card-subtitle>
     </mat-card-header>
-    <img mat-card-image src="{{ country?.flag }}" alt="img">
+    <img mat-card-image src="{{ (country$ | async)?.flag }}" alt="img">
     <mat-card-content>
-      <p>Capital: <b>{{ country?.capital }}</b></p>
+      <p>Capital: <b>{{ (country$ | async)?.capital }}</b></p>
       <br>
-      <p>Region: <b>{{ country?.subregion }}</b></p>
+      <p>Region: <b>{{ (country$ | async)?.subregion }}</b></p>
       <br>
-      <p>Population: <b>{{ country?.population | number }}</b></p>
+      <p>Population: <b>{{ (country$ | async)?.population | number  }}</b></p>
     </mat-card-content>
   </mat-card>
 </div>
 <br>
 <br>
 <div class="mat-elevation-z8">
-  <table mat-table [dataSource]="dataSource">
+  <table mat-table [dataSource]="bordersCountries$ | async">
     <ng-container matColumnDef="name">
       <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
       <mat-cell *matCellDef="let country"> {{country.name}} </mat-cell>

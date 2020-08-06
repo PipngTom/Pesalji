@@ -1,53 +1,49 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AppService } from '../app.service';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Country } from '../country';
-import { Store } from '@ngrx/store';
-import * as AppActions from '../store/app.actions';
+import { getAllCountries } from '../novi-store/store.selectors';
+import { Store, select } from '@ngrx/store';
+import * as fromStore from '../novi-store/store.actions';
+
 
 @Component({
   selector: 'app-countries',
   templateUrl: './countries.component.html',
   styleUrls: ['./countries.component.css']
 })
-export class CountriesComponent implements OnInit, OnDestroy {
-  countries: Country[]= [];
-  filteredCountries: Country[] = [];
-  private subscription: Subscription;
+
+export class CountriesComponent implements OnInit {
+  countries$: Observable<Country[]>;
+
    
-  constructor(private appService: AppService, private router: Router,
+  constructor(private router: Router,
     private store: Store<any>) { 
     
   }
 
   ngOnInit() {
-  this.store.dispatch(new AppActions.GetAllCountries());
-  this.subscription = this.store
-    .select(store => store.reducer.countries)
-      .subscribe((items: Country[]) => {
-          this.countries = items;
-          this.filteredCountries = this.countries;
-          
-        }
-      );
+  this.store.dispatch(fromStore.GET_ALL_COUNTRIES());
+  this.countries$ = this.store.pipe(
+  select(getAllCountries)
+   );
   }
 
   onFilter(event) {
-    this.filteredCountries = this.countries.filter(item => {
-      return item.name.toUpperCase().includes(event.target.value.toUpperCase());
-    })
+    this.countries$ = this.store.pipe(
+      select(getAllCountries),
+      map((items: Country[]) => {
+        return items.filter((item: Country) => {
+          return item.name.toUpperCase().includes(event.target.value.toUpperCase());
+        })
+      }
+    ))
   }
 
   onGetCountry(skr: string) {
-    this.store.dispatch(new AppActions.SingleCountry(skr));
     this.router.navigate(['/single-country'], {queryParams: {akron: skr}});
   }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
-
 
 
 }

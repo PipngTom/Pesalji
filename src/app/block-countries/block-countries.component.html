@@ -6,7 +6,7 @@
   <cdk-virtual-scroll-viewport itemSize="200" class="viewport">
     <div fxLayout="row wrap" fxLayoutGap="16px" class="align">
       <mat-card fxFlex.lg="calc(15% - 16px)" fxFlex.lt-lg="calc(25% - 16px)" 
-      fxFlex.xs="calc(100% - 16px)" *cdkVirtualFor="let country of filteredBlockCountries" (click)="onGetCountry(country.alpha3Code)">
+      fxFlex.xs="calc(100% - 16px)" *cdkVirtualFor="let country of blockCountries$ | async" (click)="onGetCountry(country.alpha3Code)">
         <mat-card-header>
           <mat-card-title> {{ country?.name }}</mat-card-title>
           <mat-card-subtitle>{{ country?.alpha3Code}}</mat-card-subtitle>

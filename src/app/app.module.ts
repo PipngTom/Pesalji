@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { AppService } from './app.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -17,9 +16,9 @@ import { MatCardModule } from '@angular/material/card';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { StoreModule } from '@ngrx/store';
-import { appReducer } from './store/app.reducer';
+import { storeReducer } from './novi-store/store.reducer';
 import { EffectsModule } from '@ngrx/effects';
-import {  AppEffects } from './store/app.effects';
+import {  AppEffects } from './novi-store/store.effects';;
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -35,7 +34,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    StoreModule.forRoot({reducer: appReducer}),
+    StoreModule.forRoot({app: storeReducer}),
     EffectsModule.forRoot([AppEffects]),
     BrowserAnimationsModule,
     HttpClientModule,
@@ -49,7 +48,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatCardModule,
     FlexLayoutModule,
   ],
-  providers: [AppService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,11 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AppService } from '../app.service';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Country } from '../country';
-import { Store } from '@ngrx/store';
-import * as AppActions from '../store/app.actions';
+import { Store, select } from '@ngrx/store';
+import { getAllCountries } from '../novi-store/store.selectors';
+import * as fromStore from '../novi-store/store.actions';
 
 
 
@@ -14,65 +15,64 @@ import * as AppActions from '../store/app.actions';
   templateUrl: './single-country.component.html',
   styleUrls: ['./single-country.component.css']
 })
-export class SingleCountryComponent implements OnInit, OnDestroy {
+
+export class SingleCountryComponent implements OnInit {
   skr: string;
-  country: Country;
+  borders = [];
+  country$: Observable<Country>;
   dataSource = new MatTableDataSource<Country>();
   displayedColumns = ['name', 'population', 'acr' ,'details'];
-  bordersCountries = [];
-  private subscription: Subscription;
-  private subscript: Subscription;
+  bordersCountries$: Observable<Country[]>;
 
-  constructor(private appService: AppService, private route: ActivatedRoute, private router: Router,
+  constructor(private route: ActivatedRoute, private router: Router,
     private store: Store<any>) {
     this.skr = this.route.snapshot.queryParamMap.get('akron');
     }
 
   ngOnInit(): void {
-    this.store.dispatch(new AppActions.FlushBordersCoutries());
-    this.store.dispatch(new AppActions.SingleCountry(this.skr));
-    this.subscription = this.store
-    .select(single => single.reducer.singleCountry)
-    .subscribe(
-  (item: Country) => {
-    this.country = item;
-    if(item){
-      if(item.alpha3Code == this.skr){
-        this.fillBordersCountries();
-      }    
-
-    }
-  }
-)
-    
+    this.store.dispatch(fromStore.GET_ALL_COUNTRIES());
+    this.country$ = this.store.pipe(
+      select(getAllCountries),
+      map(
+        (items: Country[]) => {
+          let a: Country;
+          a = items.find(
+            (item: Country) => {
+              return item.alpha3Code === this.skr;
+            }
+          );
+          if (a) {
+            this.borders = a.borders;
+          }
+          return a;
+        }
+      )
+    )
+    this.fillBordersCountries();
   }
 
   onGetCountry(abb: string) {
-    this.store.dispatch(new AppActions.SingleCountry(abb));
      this.router.navigate(['/single-country'] ,{queryParams: {akron: abb}})
      .then(
       () => {
         window.location.reload();
       }
-    );
+     )
   }
 
   fillBordersCountries() {
-    this.country.borders.map((item: string) => {
-      this.store.dispatch(new AppActions.GetBordersCountries(item))
-    })
-    this.subscript = this.store
-    .select(border => border.reducer.bordersCountries)
-    .subscribe(
-      (items) => {
-        this.dataSource = items;
-      }
+    this.bordersCountries$ = this.store.pipe(
+      select(getAllCountries),
+      map(
+        (items: Country[]) => {
+          return items.filter(
+            (item: Country) => {
+              return this.borders.includes(item.alpha3Code);
+            }
+          )
+        }
+      )
     )
   }
 
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-    this.subscript.unsubscribe();
-  }
 }
