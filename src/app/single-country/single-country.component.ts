@@ -2,10 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Country } from '../country';
 import { Store, select } from '@ngrx/store';
-import { getAllCountries } from '../novi-store/store.selectors';
+import { getSingleCountry, getBorderCountries } from '../novi-store/store.selectors';
 import * as fromStore from '../novi-store/store.actions';
 
 
@@ -30,25 +29,14 @@ export class SingleCountryComponent implements OnInit {
     }
 
   ngOnInit(): void {
+    this.store.dispatch(fromStore.SET_ALPHACODE({code: this.skr}));
     this.store.dispatch(fromStore.GET_ALL_COUNTRIES());
     this.country$ = this.store.pipe(
-      select(getAllCountries),
-      map(
-        (items: Country[]) => {
-          let a: Country;
-          a = items.find(
-            (item: Country) => {
-              return item.alpha3Code === this.skr;
-            }
-          );
-          if (a) {
-            this.borders = a.borders;
-          }
-          return a;
-        }
-      )
-    )
-    this.fillBordersCountries();
+      select(getSingleCountry)
+    );
+    this.bordersCountries$ = this.store.pipe(
+      select(getBorderCountries)
+    );
   }
 
   onGetCountry(abb: string) {
@@ -58,21 +46,6 @@ export class SingleCountryComponent implements OnInit {
         window.location.reload();
       }
      )
-  }
-
-  fillBordersCountries() {
-    this.bordersCountries$ = this.store.pipe(
-      select(getAllCountries),
-      map(
-        (items: Country[]) => {
-          return items.filter(
-            (item: Country) => {
-              return this.borders.includes(item.alpha3Code);
-            }
-          )
-        }
-      )
-    )
   }
 
 }

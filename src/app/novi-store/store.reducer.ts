@@ -7,15 +7,13 @@ import { Action } from '@ngrx/store';
 export interface AppState {
   countries: Country [];
   blockCountries: Country [];
-  singleCountry: Country;
-  bordersCountries: Country[];
+  code: string
 }
 
 const initialState: AppState = {
   countries: [],
   blockCountries: [],
-  singleCountry: null,
-  bordersCountries: []
+  code: ''
 }
 
 const reducer = createReducer(
@@ -24,6 +22,9 @@ const reducer = createReducer(
     return {...state, countries }}),
   on(StoreActions.BLOCK_COUNTRIES_SUCCESS, (state, {blockCountries}) => {
     return {...state, blockCountries }}),
+  on(StoreActions.SET_ALPHACODE, (state, {code}) => {
+    return {...state, code}
+  })
 )
 
 export function storeReducer(state: AppState | undefined, action: Action) {
