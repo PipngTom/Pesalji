@@ -1,8 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { AppService } from '../app.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
+import {  Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Country } from '../country';
+import { Store, select } from '@ngrx/store';
+import { getBlockCountries } from '../novi-store/store.selectors';
+
 
 @Component({
   selector: 'app-block-countries',
@@ -10,40 +13,37 @@ import { MatPaginator } from '@angular/material/paginator';
   styleUrls: ['./block-countries.component.css']
 })
 export class BlockCountriesComponent implements OnInit {
-  abb: string;
-  blockCountries = [];
-  dataSource = new MatTableDataSource<any>();
-  displayedColumns = ['name', 'capital', 'code', 'details'];
+  blockCountries$: Observable<Country[]>;
+  
 
-  @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
-    this.dataSource.paginator = value;
-  }
 
-  constructor(private appService: AppService, private route: ActivatedRoute,
-    private router: Router) { 
-    this.abb = this.route.snapshot.queryParamMap.get('abbrev');
-    console.log(this.abb);
+  constructor(
+    private router: Router,
+    private store: Store<any>) { 
   }
 
   ngOnInit(): void {
-    
-     this.appService.onGetBlockCountries(this.abb)
-    .subscribe(
-      (items: any[]) => {
-        console.log(items);
-        this.blockCountries = items;
-        this.dataSource = <any>this.blockCountries;
-      }
+    this.blockCountries$ = this.store.pipe(
+      select(getBlockCountries)
     )
   }
 
-  ngAfterViewInit() {
-      this.dataSource.paginator = this.paginator;
-    
-  }
 
   onGetCountry(abb: string) {
     this.router.navigate(['/single-country'], {queryParams: {akron: abb}})
+  }
+
+  onFilter(event) {
+     this.blockCountries$ = this.store.pipe(
+       select(getBlockCountries),
+       map((items: Country[]) => {
+         return items.filter(
+          (item: Country) => {
+            return item.name.toUpperCase().includes(event.target.value.toUpperCase());
+          }
+         )
+        })
+     )
   }
 
 }

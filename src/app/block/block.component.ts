@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AppService } from '../app.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import * as fromStore from '../novi-store/store.actions';
+
+
 
 
 @Component({
@@ -10,7 +13,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./block.component.css']
 })
 export class BlockComponent implements OnInit {
-  blockCountries = [];
   blocks = [
     {
       name: 'European Union',
@@ -71,16 +73,17 @@ export class BlockComponent implements OnInit {
 
   
 
-  constructor(private appService: AppService, private router: Router) { }
+  constructor(private router: Router,
+    private store: Store<any>) { }
 
   ngOnInit(): void {
+    this.store.dispatch(fromStore.GET_ALL_COUNTRIES());
     this.dataSource = <any>this.blocks;
   }
 
-  onGetBlock(abb: string){
-    this.router.navigate(['/block-countries'], {queryParams: {abbrev: abb}});
-    console.log(abb);
+  onGetBlock(abbr: string){
+    this.store.dispatch(fromStore.GET_BLOCK_COUNTRIES({abb: abbr}));
+    this.router.navigate(['/block-countries']);
 
-    
   }
 }

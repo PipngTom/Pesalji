@@ -1,68 +1,51 @@
 import { Component, OnInit } from '@angular/core';
-import { AppService } from '../app.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
+import { Observable } from 'rxjs';
+import { Country } from '../country';
+import { Store, select } from '@ngrx/store';
+import { getSingleCountry, getBorderCountries } from '../novi-store/store.selectors';
+import * as fromStore from '../novi-store/store.actions';
+
+
 
 @Component({
   selector: 'app-single-country',
   templateUrl: './single-country.component.html',
   styleUrls: ['./single-country.component.css']
 })
-export class SingleCountryComponent implements OnInit {
-  loaded = false;
-  skr: string;
-  country: any;
-  dataSource = new MatTableDataSource<any>();
-  displayedColumns = ['name', 'population', 'acr' ,'details'];
-  bordersCountries = [  ];
 
-  constructor(private appService: AppService, private route: ActivatedRoute, private router: Router) {
+export class SingleCountryComponent implements OnInit {
+  skr: string;
+  borders = [];
+  country$: Observable<Country>;
+  dataSource = new MatTableDataSource<Country>();
+  displayedColumns = ['name', 'population', 'acr' ,'details'];
+  bordersCountries$: Observable<Country[]>;
+
+  constructor(private route: ActivatedRoute, private router: Router,
+    private store: Store<any>) {
     this.skr = this.route.snapshot.queryParamMap.get('akron');
-   }
+    }
 
   ngOnInit(): void {
-    this.appService.onGetCode(this.skr)
-    .subscribe(
-      (item: any[]) => {
-        this.country = item;
-        this.fillBordersCountries();
-        //this.dataSource = <any>this.bordersCountries;
-        
-        
-        console.log(item);
-      }
-    )
+    this.store.dispatch(fromStore.SET_ALPHACODE({code: this.skr}));
+    this.store.dispatch(fromStore.GET_ALL_COUNTRIES());
+    this.country$ = this.store.pipe(
+      select(getSingleCountry)
+    );
+    this.bordersCountries$ = this.store.pipe(
+      select(getBorderCountries)
+    );
   }
 
   onGetCountry(abb: string) {
-    this.router.navigate(['single-country'], {queryParams: {akron: abb}}).then(
-      (items) => {
+     this.router.navigate(['/single-country'] ,{queryParams: {akron: abb}})
+     .then(
+      () => {
         window.location.reload();
       }
-    );
-    console.log(abb)
-  }
-
-  fillBordersCountries() {
-    for (let i=0; i<this.country.borders.length;i++) {
-      this.appService.onGetCode(this.country.borders[i])
-      .subscribe(
-        (country: any) => {
-          //this.bordersCountries.push(country.name);
-          console.log(country);
-          console.log(this.bordersCountries.length);
-          this.bordersCountries.push({name: country.name, acr: country.alpha3Code, population: country.population})
-          if(i==this.country.borders.length-1){
-            this.dataSource = <any>this.bordersCountries;
-          }
-          
-        }
-      )
-    }
-    
-   console.log(this.bordersCountries);
-    
-    this.loaded = true;
+     )
   }
 
 }

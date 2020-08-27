@@ -1,30 +1,30 @@
 <div class="main-div">
   <mat-card class="example-card">
     <mat-card-header>
-      <mat-card-title> {{ country?.name }}</mat-card-title>
-      <mat-card-subtitle>{{ country?.alpha3Code}}</mat-card-subtitle>
+      <mat-card-title> {{ (country$ | async)?.name }}</mat-card-title>
+      <mat-card-subtitle>{{ (country$ | async)?.name }}</mat-card-subtitle>
     </mat-card-header>
-    <img mat-card-image src="{{ country?.flag }}" alt="img">
+    <img mat-card-image src="{{ (country$ | async)?.flag }}" alt="img">
     <mat-card-content>
-      <p>Capital: <b>{{ country?.capital }}</b></p>
+      <p>Capital: <b>{{ (country$ | async)?.capital }}</b></p>
       <br>
-      <p>Region: <b>{{ country?.subregion }}</b></p>
+      <p>Region: <b>{{ (country$ | async)?.subregion }}</b></p>
       <br>
-      <p>Population: <b>{{ country?.population | number }}</b></p>
+      <p>Population: <b>{{ (country$ | async)?.population | number  }}</b></p>
     </mat-card-content>
   </mat-card>
 </div>
 <br>
 <br>
-<div *ngIf ="loaded" class="mat-elevation-z8">
-  <table mat-table [dataSource]="dataSource">
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="bordersCountries$ | async">
     <ng-container matColumnDef="name">
       <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
       <mat-cell *matCellDef="let country"> {{country.name}} </mat-cell>
     </ng-container>
     <ng-container matColumnDef="acr">
       <mat-header-cell *matHeaderCellDef> Acr </mat-header-cell>
-      <mat-cell *matCellDef="let country"> {{country.acr}} </mat-cell>
+      <mat-cell *matCellDef="let country"> {{country.alpha3Code}} </mat-cell>
     </ng-container>
     <ng-container matColumnDef="population">
       <mat-header-cell *matHeaderCellDef> Population </mat-header-cell>
@@ -32,7 +32,7 @@
     </ng-container>
     <ng-container matColumnDef="details">
       <mat-header-cell *matHeaderCellDef> Details </mat-header-cell>
-      <mat-cell *matCellDef="let country"><button mat-raised-button color="primary" (click)="onGetCountry(country.acr)">Get details</button></mat-cell>
+      <mat-cell *matCellDef="let country"><button mat-raised-button color="primary" (click)="onGetCountry(country.alpha3Code)">Get details</button></mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>

@@ -1,57 +1,49 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { AppService } from '../app.service';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Country } from '../country';
+import { getAllCountries } from '../novi-store/store.selectors';
+import { Store, select } from '@ngrx/store';
+import * as fromStore from '../novi-store/store.actions';
+
 
 @Component({
   selector: 'app-countries',
   templateUrl: './countries.component.html',
   styleUrls: ['./countries.component.css']
 })
-export class CountriesComponent implements OnInit, AfterViewInit {
-  countries = [];
-  loaded = false;
-  dataSource = new MatTableDataSource<any>();
-  displayedColumns = ['name', 'capital', 'code', 'details'];
 
-  @ViewChild(MatPaginator) set paginator(value: MatPaginator) {
-    this.dataSource.paginator = value;
-  }
+export class CountriesComponent implements OnInit {
+  countries$: Observable<Country[]>;
+
    
-  constructor(private appService: AppService, private router: Router) { 
+  constructor(private router: Router,
+    private store: Store<any>) { 
     
   }
 
   ngOnInit() {
-    
-    this.appService.onGetAllCountries()
-    .subscribe(
-      (items: any[]) => {
-      //  console.log(items);
-        this.countries = items;
-        this.dataSource = <any>this.countries;
-        this.loaded = true;
-      //  console.log(this.dataSource);
-      }
-    )
+  this.store.dispatch(fromStore.GET_ALL_COUNTRIES());
+  this.countries$ = this.store.pipe(
+  select(getAllCountries)
+   );
   }
 
-  ngAfterViewInit() {
-    if(this.loaded){
-      this.dataSource.paginator = this.paginator;
-    }
-    
+  onFilter(event) {
+    this.countries$ = this.store.pipe(
+      select(getAllCountries),
+      map((items: Country[]) => {
+        return items.filter((item: Country) => {
+          return item.name.toUpperCase().includes(event.target.value.toUpperCase());
+        })
+      }
+    ))
   }
-  
+
   onGetCountry(skr: string) {
     this.router.navigate(['/single-country'], {queryParams: {akron: skr}});
-    // this.appService.onGetCode(skr)
-    // .subscribe(
-    //   (items: any[]) => {
-    //     console.log(items);
-    //   }
-    // )
   }
+
 
 }
